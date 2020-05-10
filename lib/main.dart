@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:projeto_quiz/resposta.dart';
-import './questao.dart';
+import 'package:projeto_quiz/questionario.dart';
 import './resultado.dart';
 
 main(List<String> args) {
@@ -9,27 +8,44 @@ main(List<String> args) {
 
 class _PerguntaAppState extends State<PerguntaApp> {
   var _perguntaSelecionada = 0;
+  var _valorTotal = 0;
 
-  void _responder() {
+  void _responder(int valor) {
     if (temPerguntaSelecionada) {
       setState(() {
         _perguntaSelecionada++;
       });
     }
+    _valorTotal += valor;
   }
 
-  final List<Map<String, Object>> _perguntas = const [
+  final _perguntas = const [
     {
       'texto': 'Qual sua cor favorita?',
-      'respostas': ['Preto', 'Vermelho', 'Verde', 'Branco']
+      'respostas': [
+        {'texto': 'Preto', 'valor': 3},
+        {'texto': 'Vermelho', 'valor': 5},
+        {'texto': 'Verde', 'valor': 7},
+        {'texto': 'Branco', 'valor': 10},
+      ]
     },
     {
       'texto': 'Qual é seu animal favorito?',
-      'respostas': ['Tatu', 'Minhoca', 'Girafa', 'Urubu']
+      'respostas': [
+        {'texto': 'Tatu', 'valor': 3},
+        {'texto': 'Elefante', 'valor': 5},
+        {'texto': 'Corsa', 'valor': 7},
+        {'texto': 'Urubu', 'valor': 10},
+      ]
     },
     {
       'texto': 'Qual é seu time favorito?',
-      'respostas': ['Flamengo', 'Icasa', 'Fortaleza', 'Vasco']
+      'respostas': [
+        {'texto': 'Grêmio', 'valor': 3},
+        {'texto': 'Ituano', 'valor': 5},
+        {'texto': 'Fortaleza', 'valor': 7},
+        {'texto': 'Nenhum', 'valor': 10},
+      ]
     }
   ];
 
@@ -37,12 +53,15 @@ class _PerguntaAppState extends State<PerguntaApp> {
     return _perguntaSelecionada < _perguntas.length;
   }
 
+  void _reiniciarQuiz() {
+    setState(() {
+      _perguntaSelecionada = 0;
+      _valorTotal = 0;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    List<String> respostas = temPerguntaSelecionada
-        ? _perguntas.elementAt(_perguntaSelecionada)['respostas']
-        : null;
-
     return MaterialApp(
       title: "Aplicativo de Quizz",
       home: Scaffold(
@@ -50,20 +69,12 @@ class _PerguntaAppState extends State<PerguntaApp> {
             title: Text('Quiz de bobeira'),
           ),
           body: temPerguntaSelecionada
-              ? Column(
-                  children: [
-                    Questao(
-                        texto: _perguntas
-                            .elementAt(_perguntaSelecionada)['texto']),
-                    ...respostas
-                        .map((resposta) => Resposta(
-                              resposta: resposta,
-                              onSelection: _responder,
-                            ))
-                        .toList(),
-                  ],
+              ? Questionario(
+                  perguntas: _perguntas,
+                  perguntaSelecionada: _perguntaSelecionada,
+                  responder: _responder,
                 )
-              : Resultado()),
+              : Resultado(_valorTotal, _reiniciarQuiz)),
     );
   }
 }
