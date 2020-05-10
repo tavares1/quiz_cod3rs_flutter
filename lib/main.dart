@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:projeto_quiz/resposta.dart';
 import './questao.dart';
+import './resultado.dart';
 
 main(List<String> args) {
   runApp(PerguntaApp());
@@ -45,27 +46,24 @@ class _PerguntaAppState extends State<PerguntaApp> {
     return MaterialApp(
       title: "Aplicativo de Quizz",
       home: Scaffold(
-        appBar: AppBar(
-          title: Text('Quiz de bobeira'),
-        ),
-        body: temPerguntaSelecionada
-            ? Column(
-                children: [
-                  Questao(
-                      texto:
-                          _perguntas.elementAt(_perguntaSelecionada)['texto']),
-                  ...respostas
-                      .map((resposta) => Resposta(
-                            resposta: resposta,
-                            onSelection: _responder,
-                          ))
-                      .toList(),
-                ],
-              )
-            : Center(
-                child: Text('Acabou'),
-              ),
-      ),
+          appBar: AppBar(
+            title: Text('Quiz de bobeira'),
+          ),
+          body: temPerguntaSelecionada
+              ? Column(
+                  children: [
+                    Questao(
+                        texto: _perguntas
+                            .elementAt(_perguntaSelecionada)['texto']),
+                    ...respostas
+                        .map((resposta) => Resposta(
+                              resposta: resposta,
+                              onSelection: _responder,
+                            ))
+                        .toList(),
+                  ],
+                )
+              : Resultado()),
     );
   }
 }
