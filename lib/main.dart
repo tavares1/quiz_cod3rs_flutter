@@ -7,36 +7,64 @@ main(List<String> args) {
 }
 
 class _PerguntaAppState extends State<PerguntaApp> {
-
   var _perguntaSelecionada = 0;
 
   void _responder() {
-    setState(() {
-      _perguntaSelecionada++;  
-    });  
+    if (temPerguntaSelecionada) {
+      setState(() {
+        _perguntaSelecionada++;
+      });
+    }
   }
 
-  final _perguntas = [ 
-    "qual a sua cor favorita?",
-    "qual seu animal favorito?"
+  final List<Map<String, Object>> _perguntas = const [
+    {
+      'texto': 'Qual sua cor favorita?',
+      'respostas': ['Preto', 'Vermelho', 'Verde', 'Branco']
+    },
+    {
+      'texto': 'Qual é seu animal favorito?',
+      'respostas': ['Tatu', 'Minhoca', 'Girafa', 'Urubu']
+    },
+    {
+      'texto': 'Qual é seu time favorito?',
+      'respostas': ['Flamengo', 'Icasa', 'Fortaleza', 'Vasco']
+    }
   ];
+
+  bool get temPerguntaSelecionada {
+    return _perguntaSelecionada < _perguntas.length;
+  }
 
   @override
   Widget build(BuildContext context) {
+    List<String> respostas = temPerguntaSelecionada
+        ? _perguntas.elementAt(_perguntaSelecionada)['respostas']
+        : null;
+
     return MaterialApp(
       title: "Aplicativo de Quizz",
       home: Scaffold(
         appBar: AppBar(
           title: Text('Quiz de bobeira'),
         ),
-        body: Column(
-          children: [
-            Questao(texto: _perguntas.elementAt(_perguntaSelecionada)),
-            Resposta(resposta: 'Resposta 1'),
-            Resposta(resposta: 'Resposta 2'),
-            Resposta(resposta: 'Resposta 3'),
-          ],
-        ),
+        body: temPerguntaSelecionada
+            ? Column(
+                children: [
+                  Questao(
+                      texto:
+                          _perguntas.elementAt(_perguntaSelecionada)['texto']),
+                  ...respostas
+                      .map((resposta) => Resposta(
+                            resposta: resposta,
+                            onSelection: _responder,
+                          ))
+                      .toList(),
+                ],
+              )
+            : Center(
+                child: Text('Acabou'),
+              ),
       ),
     );
   }
